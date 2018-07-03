@@ -23,59 +23,10 @@
             <img class="p104" src="img/p104.png" alt="">
             <img id="btn101" class="p103" src="img/p103.png" alt="">
         </div>
-        <div class="teams-select">
+        <div id="teams-select" class="teams-select">
             <img class="teams-title" src="img/teams-title.png" alt="">
-            <div id="teams-list" class="teams-list">
-                <div class="teams-item">
-                    <img class="teams-icon" src="img/teams/01.jpg" alt="">
-                    <b class="teams-name">俄羅斯</b>
-                </div>
-                <div class="teams-item">
-                    <img class="teams-icon" src="img/teams/01.jpg" alt="">
-                    <b class="teams-name">俄羅斯</b>
-                </div>
-                <div class="teams-item active">
-                    <img class="teams-icon" src="img/teams/01.jpg" alt="">
-                    <b class="teams-name">俄羅斯</b>
-                </div>
-                <div class="teams-item">
-                    <img class="teams-icon" src="img/teams/01.jpg" alt="">
-                    <b class="teams-name">俄羅斯</b>
-                </div>
-                <div class="teams-item">
-                    <img class="teams-icon" src="img/teams/01.jpg" alt="">
-                    <b class="teams-name">俄羅斯</b>
-                </div>
-                <div class="teams-item">
-                    <img class="teams-icon" src="img/teams/01.jpg" alt="">
-                    <b class="teams-name">俄羅斯</b>
-                </div>
-                <div class="teams-item">
-                    <img class="teams-icon" src="img/teams/01.jpg" alt="">
-                    <b class="teams-name">俄羅斯</b>
-                </div>
-                <div class="teams-item">
-                    <img class="teams-icon" src="img/teams/01.jpg" alt="">
-                    <b class="teams-name">俄羅斯</b>
-                </div>
-                <div class="teams-item">
-                    <img class="teams-icon" src="img/teams/01.jpg" alt="">
-                    <b class="teams-name">俄羅斯</b>
-                </div>
-                <div class="teams-item">
-                    <img class="teams-icon" src="img/teams/01.jpg" alt="">
-                    <b class="teams-name">俄羅斯</b>
-                </div>
-                <div class="teams-item">
-                    <img class="teams-icon" src="img/teams/01.jpg" alt="">
-                    <b class="teams-name">俄羅斯</b>
-                </div>
-                <div class="teams-item">
-                    <img class="teams-icon" src="img/teams/01.jpg" alt="">
-                    <b class="teams-name">俄羅斯</b>
-                </div>
-            </div>
-            <img class="start-btn" src="img/start.png" alt="">
+            <div id="teams-list" class="teams-list"></div>
+            <img id="start-btn" class="start-btn" src="img/start.png" alt="">
         </div>
     </div>
     <div class="scene scene-2">
@@ -89,18 +40,32 @@
         <img id="pointer201" class="pointer201" src="img/pointer.png" alt="">
         <div id="goal201" class="goal201"></div>
         <canvas id="cv"></canvas>
+        <div id="rules" class="rules">
+            <div class="rules-inner">
+                <img class="rules-img" src="img/rules.png" alt="">
+                <div class="rules-close">&times;</div>
+                <div class="rules-content">
+                    手指觸球，顯示方向標，手指快速劃出，球即被踢出，劃出速度越快，球將飛得越遠，球最後停在球門區域，並且未碰守門員，則進球得分。踢出第一球後開始計時，<b class="rules-time">15</b>秒內完成。
+                </div>
+            </div>
+        </div>
+        <img id="show-rules" class="show-rules" src="img/show-rules.png" alt="">
     </div>
     <div class="scene scene-3">
-        <div class="p301-box">
-            <img class="p301" src="img/p301.png" alt="">
-            <img id="statTxt302" class="p302" src="img/p302.png" alt="">
-            <div id="score301" class="score"></div>
-            <div id="rank301" class="rank"></div>
+        <div class="result">
+            <img class="result-fail" src="img/fail.png" alt="">
+            <div class="result-success">
+                <div class="result-success-txt">恭喜!</div>
+                <div class="result-success-msg">
+                    你為<span class="result-team"></span><br>
+                    貢獻了<span class="result-score"></span>球
+                </div>
+            </div>
+            <div class="current-rank">球隊排名：<span class="rank-num"></span></div>
         </div>
-        <div class="p3-btn-box">
-            <img id="again301" class="again" src="img/again.png" alt="">
-            <img id="share301" class="share" src="img/share.png" alt="">
-        </div>
+        <img class="rank-btn" src="img/rank-btn.png" alt="">
+        <img class="again" src="img/again.png" alt="">
+        <img class="share" src="img/share.png" alt="">
     </div>
 </div>
 </body>

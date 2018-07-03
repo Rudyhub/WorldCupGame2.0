@@ -167,11 +167,7 @@ var utils = {
     loading: function(complete){
         var popup = this.popup(),
             div = document.createElement('div');
-        this.css(div,{
-            textAlign: 'left',
-            padding: '.5em',
-            display: 'inline-block'
-        });
+        div.className = 'popup-inner';
         div.innerHTML = 'loading...0%';
         popup.show(div);
         this.loadImage(['again.png','ball.png', 'bg201.jpg','bg301.jpg',

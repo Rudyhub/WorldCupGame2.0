@@ -1,49 +1,16 @@
 utils.ready(function () {
-    var popup = utils.popup(),
-        scene = document.querySelectorAll('.scene');
+    var popup = utils.popup();
 
     if(!utils.isTouch()){
         popup.show('<span class="popup-inner">設備不支持！</span>');
         return;
     }
 
-    function turnScene(index){
-        for(var i=0; i<3; i++){
-            if(i === index){
-                scene[i].style.display = 'block';
-                utils.addClass(scene[i], 'on');
-            }else{
-                scene[i].style.display = 'none';
-                utils.removeClass(scene[i], 'on');
-            }
-        }
-    }
-
-    turnScene(0);
-
-    utils.ajax({
-        url: 'data.json',
-        success: function(data){
-            try{
-                var html = '',
-                    data = typeof data === 'object' ? data : JSON.parse(data);
-                for(var i=0, len=data.length; i<len; i++){
-                    html += '<div class="teams-item" data-id="'+data[i].id+'">' +
-                            '<img class="teams-icon" src="'+data[i].img+'" alt="">' +
-                            '<b class="teams-name">'+data[i].name+'</b>' +
-                        '</div>';
-                }
-                document.getElementById('teams-list').innerHTML = html;
-            }catch (e) {
-                console.log(e);
-            }
-        },
-        fail(){
-            console.log('fail to request teams');
-        }
-    });
-
-    var btn101 = document.getElementById('btn101'),
+    var scene = document.querySelectorAll('.scene'),
+        btn101 = document.getElementById('btn101'),
+        teamSelect = document.getElementById('teams-select'),
+        teamList = document.getElementById('teams-list'),
+        startBtn = document.getElementById('start-btn'),
         ball201 = document.getElementById('ball201'),
         goalie = document.querySelectorAll('.goalie'),
         clock201 = document.getElementById('clock201'),
@@ -52,7 +19,8 @@ utils.ready(function () {
         pointer201 = document.getElementById('pointer201'),
         steer = document.getElementById('steer'),
         cv = document.getElementById('cv'),
-        statTxt302 = document.getElementById('statTxt302'),
+        rules = document.getElementById('rules'),
+        showRules = document.getElementById('show-rules'),
         goalie203Cls = goalie[2].className,
         kickAudio = new Audio(),
         requestFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
@@ -60,7 +28,7 @@ utils.ready(function () {
         deg = 0,
         stat = 0, //守门员扑员状态，0:中间直站，1:左倾，2:右倾
         clock = null,
-        timeLimit = 10000,
+        timeLimit = 15,
         countTime = timeLimit,
         sensitivity = .88,
         pscore = 0, //丢球
@@ -76,6 +44,7 @@ utils.ready(function () {
         ballCenter = [],
         touchX = 0,
         touchY = 0,
+        team = 0,
         prevent = {passive: false};
 
     //用来阻止移动端浏览器默认的橡皮弹性，尤其iphone
@@ -83,71 +52,93 @@ utils.ready(function () {
         if( ball201.parentNode.contains(e.target) && e.target !== ball201){
             e.preventDefault();
         }
+        if(e.target === rules || utils.hasClass(e.target, 'rules-close')){
+            utils.removeClass(rules, 'show');
+        }
+        if(e.target === showRules){
+            utils.addClass(rules, 'show');
+        }
     }, prevent);
 
+    function turnScene(index){
+        for(var i=0; i<3; i++){
+            if(i === index){
+                scene[i].style.display = 'block';
+                utils.addClass(scene[i], 'on');
+            }else{
+                scene[i].style.display = 'none';
+                utils.removeClass(scene[i], 'on');
+            }
+        }
+    }
+
+    kickAudio.src = 'audio/kick.mp3';
+
+    utils.ajax({
+        url: 'data.json',
+        success: function(data){
+            try{
+                var html = '',
+                    data = typeof data === 'object' ? data : JSON.parse(data),
+                    i = 0,
+                    len = data.length;
+                for(; i<len; i++){
+                    html += '<div class="teams-item" data-id="'+data[i].id+'">' +
+                        '<img class="teams-icon" src="'+data[i].img+'" alt="">' +
+                        '<b class="teams-name">'+data[i].name+'</b>' +
+                        '</div>';
+                }
+                teamList.innerHTML = html;
+
+                var items = teamList.querySelectorAll('.teams-item');
+
+                for(i = 0,len=items.length; i<len; i++){
+                    items[i].onclick = function () {
+                        var activeItem = teamList.querySelector('.active');
+                        if(activeItem) utils.removeClass(activeItem, 'active');
+                        utils.addClass(this, 'active');
+                        team = this.getAttribute('data-id');
+                    }
+                }
+            }catch (e) {
+                console.log(e);
+            }
+        },
+        fail(){
+            console.log('fail to request teams');
+        }
+    });
+
     btn101.onclick = function(){
-        kickAudio.src = 'audio/kick.mp3';
         kickAudio.play();
-        turnScene(1);
-        readyStart();
+        utils.addClass(teamSelect, 'show');
     };
 
-    var setting = createSetting();
+    startBtn.onclick = function () {
+        if(!team){
+            utils.popup({
+                background: 'rgba(0,0,0,.6)',
+                color: '#fff'
+            }).show('<span class="popup-inner">未選擇球隊！</span>');
+            return false;
+        }
+        utils.removeClass(teamSelect, 'show');
+        turnScene(1);
+        rules.querySelector('.rules-time').innerHTML = timeLimit;
+        setTimeout(function () {
+            utils.addClass(rules, 'show');
+        },800);
+        readyStart();
+    };
 
     function readyStart(){
         pscore = 0;
         uscore = 0;
         score201.innerText = '0';
-        clock201.innerText = timeLimit/1000;
+        clock201.innerText = timeLimit;
         countTime = timeLimit;
         utils.removeClass(pointer201, 'hide');
-
-        var timeouter = setTimeout(function () {
-            clearTimeout(timeouter);
-            utils.popup({
-                background: 'rgba(0,0,0,.7)',
-                color: '#fff'
-            }).show(setting);
-        },1000);
-
         reStat();
-    }
-
-    function createSetting(){
-        var div = document.createElement('div'),
-            timeSelect = document.createElement('select'),
-            sensSelect = document.createElement('select'),
-            timeOption = [10,20,30,60],
-            sensOption = [0.80,0.82,0.84,0.86,0.88,0.90,0.92,0.94,0.96,0.98],
-            len = 0,
-            i = 0;
-
-        timeSelect.className = sensSelect.className = 'setting-select';
-        div.className = 'popup-inner';
-
-        timeSelect.onchange = function(){
-            timeLimit = parseFloat(this.value)*1000;
-            clock201.innerText = timeLimit/1000;
-            countTime = timeLimit;
-        };
-        sensSelect.onchange = function(){
-            sensitivity = parseFloat(this.value);
-        };
-
-        for(i=0,len=timeOption.length; i<len; i++){
-            timeSelect.innerHTML += '<option style="color: #333;" value="'+timeOption[i]+'"'+(timeOption[i]===timeLimit/1000 ? 'selected' : '')+'>'+timeOption[i]+'秒</option>';
-        }
-        for(i=0,len=sensOption.length; i<len; i++){
-            sensSelect.innerHTML += '<option value="'+sensOption[i]+'"'+(sensOption[i]===sensitivity ? 'selected' : '')+'>'+sensOption[i]+'</option>';
-        }
-
-        div.appendChild(document.createTextNode('挑戰時間：'));
-        div.appendChild(timeSelect);
-        div.appendChild(document.createElement('p'));
-        div.appendChild(document.createTextNode('速度感應：'));
-        div.appendChild(sensSelect);
-
-        return div;
     }
 
     function reStat(){
@@ -325,7 +316,7 @@ utils.ready(function () {
                 timer = setTimeout( function(){
                     clearTimeout(timer);
                     reStat();
-                    if(countTime === 0) gameOver(true);
+                    if(countTime <= 0) gameOver();
                 }, 200);
             }else{
                 timer = requestFrame(re);
@@ -343,33 +334,56 @@ utils.ready(function () {
     }
 
     function clockFn(){
-        countTime -= 1000;
+        countTime -= 1;
         if(countTime <= 0){
             clearInterval(clock);
             countTime = 0;
-            clock201.innerText;
-            gameOver();
+            clock201.innerText = 0;
         }else{
-            clock201.innerText = countTime/1000;
+            clock201.innerText = countTime;
         }
     }
 
-    var score301 = document.getElementById('score301'),
-        rank301 = document.getElementById('rank301'),
-        again301 = document.getElementById('again301'),
-        share301 = document.getElementById('share301');
-    function gameOver(bool){
-        if(!bool) turnScene(2);
+    var result = document.querySelector('.result'),
+        score301 = document.querySelector('.result-score'),
+        rank301 = document.querySelector('.rank-num'),
+        team301 = document.querySelector('.result-team'),
+        again = document.querySelector('.again'),
+        share = document.querySelector('.share');
+    function gameOver(){
         score301.innerText = uscore;
-        rank301.innerText = '';
+        utils.ajax({
+            url: 'http://innovation.wenweipo.com/api/ranking.php',
+            success: function (data) {
+                try{
+                    var data = typeof data === 'object' ? data : JSON.parse(data);
+                    data.sort(function (a, b) {
+                        return parseInt(a.score) - parseInt(b.score);
+                    });
+                    for(var i=0, len=data.length; i<len; i++){
+                        if(data[i].id === team+''){
+                            rank301.innerText = i;
+                            team301.innerText = data[i].name;
+                            break;
+                        }
+                    }
+                }catch (e) {
+                    console.log(e);
+                }
+            }
+        });
+
         if(uscore <= 0){
-            statTxt302.src = 'img/p303.png';
+            utils.removeClass(result, 'success');
+            utils.addClass(result, 'fail');
         }else{
-            statTxt302.src = 'img/p302.png';
+            utils.addClass(result, 'success');
+            utils.removeClass(result, 'fail');
         }
+        turnScene(2);
     }
 
-    again301.onclick = function () {
+    again.onclick = function () {
         readyStart();
         turnScene(1);
     };
@@ -378,14 +392,15 @@ utils.ready(function () {
         background: 'rgba(0,0,0,.7)',
         color: '#fff'
     });
-    share301.onclick = function(){
+    share.onclick = function(){
         if(/MicroMessenger/i.test(window.navigator.userAgent)){
             sharePopup.show('<span class="popup-inner">請點擊微信右上角菜單選擇分享。</span>');
         }else{
             sharePopup.show('<span class="popup-inner">請點擊瀏覽分享菜單進行分享。</span>');
         }
-    }
+    };
 
+    turnScene(0);
 });
 
 
