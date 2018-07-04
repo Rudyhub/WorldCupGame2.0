@@ -31,7 +31,7 @@ utils.ready(function () {
         deg = 0,
         stat = 0, //守门员扑员状态，0:中间直站，1:左倾，2:右倾
         clock = null,
-        timeLimit = 3,
+        timeLimit = 15,
         countTime = timeLimit,
         sensitivity = .88,
         pscore = 0, //丢球
@@ -453,6 +453,7 @@ utils.ready(function () {
         background: 'rgba(0,0,0,.7)',
         color: '#fff'
     });
+
     share.onclick = function(){
         if(/MicroMessenger/i.test(window.navigator.userAgent)){
             sharePopup.show('<span class="popup-inner">請點擊微信右上角菜單選擇分享。</span>');
