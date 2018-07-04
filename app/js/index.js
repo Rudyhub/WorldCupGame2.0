@@ -21,6 +21,9 @@ utils.ready(function () {
         cv = document.getElementById('cv'),
         rules = document.getElementById('rules'),
         showRules = document.getElementById('show-rules'),
+        rankBtn = document.querySelector('.rank-btn'),
+        rankBox = document.getElementById('rank-box'),
+        rankList = document.getElementById('rank-list'),
         goalie203Cls = goalie[2].className,
         kickAudio = new Audio(),
         requestFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
@@ -28,7 +31,7 @@ utils.ready(function () {
         deg = 0,
         stat = 0, //守门员扑员状态，0:中间直站，1:左倾，2:右倾
         clock = null,
-        timeLimit = 15,
+        timeLimit = 3,
         countTime = timeLimit,
         sensitivity = .88,
         pscore = 0, //丢球
@@ -44,6 +47,7 @@ utils.ready(function () {
         ballCenter = [],
         touchX = 0,
         touchY = 0,
+        teams = null,
         team = 0,
         prevent = {passive: false};
 
@@ -52,8 +56,10 @@ utils.ready(function () {
         if( ball201.parentNode.contains(e.target) && e.target !== ball201){
             e.preventDefault();
         }
-        if(e.target === rules || utils.hasClass(e.target, 'rules-close')){
-            utils.removeClass(rules, 'show');
+        if(utils.hasClass(e.target, 'mask')){
+            utils.removeClass(e.target, 'show');
+        }else if(utils.hasClass(e.target, 'close')){
+            utils.removeClass(e.target.parentNode.parentNode, 'show');
         }
         if(e.target === showRules){
             utils.addClass(rules, 'show');
@@ -74,18 +80,20 @@ utils.ready(function () {
 
     kickAudio.src = 'audio/kick.mp3';
 
+    utils.addClass(teamList, 'loading-icon');
     utils.ajax({
         url: 'data.json',
         success: function(data){
             try{
+                teams = typeof data === 'object' ? data : JSON.parse(data);
+
                 var html = '',
-                    data = typeof data === 'object' ? data : JSON.parse(data),
                     i = 0,
-                    len = data.length;
+                    len = teams.length;
                 for(; i<len; i++){
-                    html += '<div class="teams-item" data-id="'+data[i].id+'">' +
-                        '<img class="teams-icon" src="'+data[i].img+'" alt="">' +
-                        '<b class="teams-name">'+data[i].name+'</b>' +
+                    html += '<div class="teams-item" data-id="'+teams[i].id+'">' +
+                        '<img class="teams-icon" src="'+teams[i].img+'" alt="">' +
+                        '<b class="teams-name">'+teams[i].name+'</b>' +
                         '</div>';
                 }
                 teamList.innerHTML = html;
@@ -106,6 +114,9 @@ utils.ready(function () {
         },
         fail(){
             console.log('fail to request teams');
+        },
+        complete: function () {
+            utils.removeClass(teamList, 'loading-icon');
         }
     });
 
@@ -127,7 +138,7 @@ utils.ready(function () {
         rules.querySelector('.rules-time').innerHTML = timeLimit;
         setTimeout(function () {
             utils.addClass(rules, 'show');
-        },800);
+        },500);
         readyStart();
     };
 
@@ -346,30 +357,34 @@ utils.ready(function () {
 
     var result = document.querySelector('.result'),
         score301 = document.querySelector('.result-score'),
-        rank301 = document.querySelector('.rank-num'),
+        rank301 = document.querySelector('.current-rank-num'),
         team301 = document.querySelector('.result-team'),
         again = document.querySelector('.again'),
         share = document.querySelector('.share');
     function gameOver(){
         score301.innerText = uscore;
+        utils.addClass(rank301, 'loading-icon');
         utils.ajax({
-            url: 'http://innovation.wenweipo.com/api/ranking.php',
-            success: function (data) {
-                try{
-                    var data = typeof data === 'object' ? data : JSON.parse(data);
-                    data.sort(function (a, b) {
-                        return parseInt(a.score) - parseInt(b.score);
-                    });
-                    for(var i=0, len=data.length; i<len; i++){
-                        if(data[i].id === team+''){
-                            rank301.innerText = i;
-                            team301.innerText = data[i].name;
-                            break;
-                        }
+            url: 'http://localhost/world_cup_shot_game/api/post.php',
+            data: {
+                team: team,
+                score: uscore
+            },
+            success: function(data){
+                data = typeof data === 'object' ? data : JSON.parse(data);
+                if(parseInt(data.code) === 0){
+                    if(typeof data.msg === 'object'){
+                        rank301.innerText = data.msg.ranking || '';
+                        if(teams) team301.innerText = teams[team-1].name || '';
                     }
-                }catch (e) {
-                    console.log(e);
                 }
+            },
+            fail: function(xhr){
+                rank301.innerText = '';
+                console.error('readyState: '+xhr.readyState+' status: '+xhr.status);
+            },
+            complete: function () {
+                utils.removeClass(rank301, 'loading-icon');
             }
         });
 
@@ -382,6 +397,52 @@ utils.ready(function () {
         }
         turnScene(2);
     }
+
+    rankBtn.onclick = function(){
+        utils.addClass(rankBox, 'show');
+        utils.addClass(rankList, 'loading-icon');
+        utils.ajax({
+            url: 'http://localhost/world_cup_shot_game/api/ranking.php',
+            success: function (data) {
+                try{
+                    data = typeof data === 'object' ? data : JSON.parse(data);
+                    data.sort(function (a, b) {
+                        return parseInt(b.score) - parseInt(a.score);
+                    });
+                    var html = '', prevScore = data[0].score, ranknum = 1;
+                    for(var i=0, len=data.length; i<len; i++){
+                        if(data[i].score !== prevScore){
+                            ranknum++;
+                            prevScore = data[i].score;
+                        }
+                        if(ranknum<=3){
+                            html += '<div class="rank-item rank-'+ranknum+'">'+
+                                '<div class="rank-num rank-cell">'+
+                                '<img class="rank-medal" src="img/NO'+ranknum+'.png" alt="">'+
+                                '</div>'+
+                                '<div class="rank-score rank-cell">'+data[i].score+'</div>'+
+                                    '<div class="rank-team rank-cell">'+
+                                    '<img class="rank-flag" src="img/teams/'+(parseInt(data[i].id) >= 10 ? data[i].id : '0'+data[i].id)+'.jpg">'+data[i].name+
+                                '</div>'+
+                                '</div>';
+                        }else{
+                            html += '<div class="rank-item rank-4">'+
+                                '<div class="rank-num rank-cell">'+ranknum+'</div>'+
+                                '<div class="rank-score rank-cell">'+data[i].score+'</div>'+
+                                '<div class="rank-team rank-cell">'+data[i].name+'</div>'+
+                                '</div>';
+                        }
+                    }
+                    rankList.innerHTML = html;
+                }catch (e) {
+                    console.log(e);
+                }
+            },
+            complete: function () {
+                utils.removeClass(rankList, 'loading-icon');
+            }
+        });
+    };
 
     again.onclick = function () {
         readyStart();

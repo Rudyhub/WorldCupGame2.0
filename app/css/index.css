@@ -125,9 +125,9 @@ body{
 }
 .teams-select.show{
     display: block;
-    -webkit-animation: slide-down 1.5s;
-    -o-animation: slide-down 1.5s;
-    animation: slide-down 1.5s;
+    -webkit-animation: slide-down .8s;
+    -o-animation: slide-down .8s;
+    animation: slide-down .8s;
 }
 .teams-title{
     width: 81%;
@@ -270,7 +270,8 @@ body{
     opacity: 0;
     z-index: -1;
 }
-.rules{
+.rules,
+.rank-box{
     width: 100%;
     height: 100%;
     background: rgba(0,0,0,.5);
@@ -280,22 +281,27 @@ body{
     z-index: 98;
     display: none;
 }
-.rules-inner{
+.rules-inner,
+.rank-inner{
     width: 80%;
     margin: 19.5% auto;
     position: relative;
 }
-.rules-img{
+.rules-img,
+.rank-bg{
     width: 100%;
     display: block;
 }
-.rules-close{
+.rules-close,
+.rank-close{
     position: absolute;
-    top: 12%;
-    right: 8%;
+    top: 0;
+    right: 0;
     text-align: center;
     width: 30px;
     height: 30px;
+    margin-top: 12%;
+    margin-right: 6%;
     font-size: 30px;
     line-height: 25px;
     color: #fff;
@@ -319,13 +325,14 @@ body{
     line-height: 1.6;
     text-indent: 2em;
 }
-.rules.show{
+.rules.show,
+.rank-box.show{
     display: block;
 }
 .show .rules-inner{
-    -webkit-animation: slide-down 1.5s;
-    -o-animation: slide-down 1.5s;
-    animation: slide-down 1.5s;
+    -webkit-animation: slide-down .8s;
+    -o-animation: slide-down .8s;
+    animation: slide-down .8s;
 }
 .show-rules{
     position: absolute;
@@ -344,12 +351,17 @@ body{
     margin: 15.6% auto 0;
     position: relative;
     opacity: 0;
-    font-size: 32px;
+    font-size: 30px;
     font-weight: bolder;
     text-align: center;
 }
 .result-success{
     display: none;
+}
+.result-success-img{
+    width: 70%;
+    display: block;
+    margin: 0 auto;
 }
 .result-success-txt{
     color: #dc212a;
@@ -374,8 +386,9 @@ body{
 .current-rank{
     color: #2c4fb6;
     margin: 6% auto;
+    font-size: 24px;
 }
-.rank-num{
+.current-rank-num{
     color: #c61921;
 }
 .result-fail{
@@ -421,6 +434,70 @@ body{
     animation: fade-in 1s 1.2s;
     -webkit-animation-fill-mode: forwards;
     animation-fill-mode: forwards;
+}
+
+.rank-list{
+    position: absolute;
+    top: 28%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 90%;
+    height: 70%;
+    overflow: auto;
+    color: #fff;
+}
+.rank-item{
+    display: table;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    padding: 5px;
+    margin-bottom: 10px;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.rank-1{
+    background: #fe6436;
+}
+.rank-2{
+    background: #d14ff8;
+}
+.rank-3{
+    background: #328afe;
+}
+.rank-4{
+    background: #16388e;
+}
+.rank-cell{
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+.rank-num{
+    width: 17%;
+    font-weight: bolder;
+    font-size: 16px;
+}
+.rank-score{
+    font-weight: bolder;
+    font-size: 20px;
+}
+.rank-medal{
+    display: block;
+    width: 96%;
+    margin: 0 auto;
+}
+.rank-team{
+    width: 30%;
+    font-size: 12px;
+}
+.rank-flag{
+    display: block;
+    width: 60%;
+    margin: 0 auto;
 }
 
 .rotating{
@@ -471,10 +548,25 @@ body{
     -moz-border-radius: .5em;
     border-radius: .5em;
 }
-.setting-select{
-    background: transparent;
-    color: #fff;
-}
-.setting-select option{
-    color: #333;
+
+.loading-icon::after{
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    border-style: solid;
+    border-top-width: 0;
+    border-left-width: 2px;
+    border-right-width: 0;
+    border-bottom-width: 2px;
+    -webkit-animation: rotating 1s linear infinite;
+    -o-animation: rotating 1s linear infinite;
+    animation: rotating 1s linear infinite;
+    vertical-align: middle;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
