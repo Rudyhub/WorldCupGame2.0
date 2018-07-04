@@ -77,11 +77,10 @@ var utils = {
             if(o.data instanceof FormData){
                 data = o.data;
             }else{
-                data = '';
+                data = new FormData();
                 for(var k in o.data){
-                    data += '&'+k+'='+o.data[k];
+                    data.append(k, o.data[k]);
                 }
-                data = data.slice(1);
             }
         }
         xhr.send(data);
@@ -165,20 +164,30 @@ var utils = {
         }
     },
     loading: function(complete){
-        var popup = this.popup(),
-            div = document.createElement('div');
+        var _this = this,
+            popup = this.popup(),
+            div = document.createElement('div'),
+            imgs = ['again.png','ball.png', 'bg201.jpg','bg301.jpg',
+                'fail.png','goalie01.png', 'goalie02.png','goalie03.png',
+                'NO1.png','NO2.png','NO3.png',
+                'p101.jpg', 'p102.jpg','p103.png','p104.png',
+                'pointer.png','rank-bg.png', 'rank-btn.png','rules.png',
+                'share.png','show-rules.png','start.png','steer.png',
+                'success.png','teams-bg.jpg','teams-title.png'
+            ];
         div.className = 'popup-inner';
-        div.innerHTML = 'loading...0%';
+        this.addClass(div, 'loading-icon');
         popup.show(div);
-        this.loadImage(['again.png','ball.png', 'bg201.jpg','bg301.jpg',
-            'p101.jpg', 'p102.jpg','p103.png','p104.png','p301.png','p302.png','p303.png',
-            'goalie01.png', 'goalie02.png','goalie03.png',
-            'pointer.png', 'share.png','steer.png'], function (cur, total) {
+        for(var i=1; i<=32; i++){
+            imgs.push('teams/'+(i<10 ? '0'+i : i)+'.jpg');
+        }
+        this.loadImage(imgs, function (cur, total) {
             if(cur === total){
                 popup.hide();
+                _this.removeClass(div, 'loading-icon');
                 if(complete) complete();
             }else{
-                div.innerHTML = 'loading...'+Math.round(cur/total * 100) + '%';
+                div.innerHTML = Math.round(cur/total * 100) + '%';
             }
         });
     },

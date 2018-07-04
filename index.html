@@ -40,10 +40,10 @@
         <img id="pointer201" class="pointer201" src="img/pointer.png" alt="">
         <div id="goal201" class="goal201"></div>
         <canvas id="cv"></canvas>
-        <div id="rules" class="rules">
+        <div id="rules" class="rules mask">
             <div class="rules-inner">
                 <img class="rules-img" src="img/rules.png" alt="">
-                <div class="rules-close">&times;</div>
+                <div class="rules-close close">&times;</div>
                 <div class="rules-content">
                     手指觸球，顯示方向標，手指快速劃出，球即被踢出，劃出速度越快，球將飛得越遠，球最後停在球門區域，並且未碰守門員，則進球得分。踢出第一球後開始計時，<b class="rules-time">15</b>秒內完成。
                 </div>
@@ -55,17 +55,25 @@
         <div class="result">
             <img class="result-fail" src="img/fail.png" alt="">
             <div class="result-success">
-                <div class="result-success-txt">恭喜!</div>
+                <img class="result-success-img" src="img/success.png" alt="">
                 <div class="result-success-msg">
                     你為<span class="result-team"></span><br>
                     貢獻了<span class="result-score"></span>球
                 </div>
             </div>
-            <div class="current-rank">球隊排名：<span class="rank-num"></span></div>
+            <div class="current-rank">球隊排名：<span class="current-rank-num"></span></div>
         </div>
         <img class="rank-btn" src="img/rank-btn.png" alt="">
         <img class="again" src="img/again.png" alt="">
         <img class="share" src="img/share.png" alt="">
+
+        <div id="rank-box" class="rank-box mask">
+            <div class="rank-inner">
+                <img class="rank-bg" src="img/rank-bg.png" alt="">
+                <div class="rank-close close">&times;</div>
+                <div id="rank-list" class="rank-list"></div>
+            </div>
+        </div>
     </div>
 </div>
 </body>
