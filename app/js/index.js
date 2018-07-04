@@ -82,7 +82,7 @@ utils.ready(function () {
 
     utils.addClass(teamList, 'loading-icon');
     utils.ajax({
-        url: 'data.json',
+        url: 'teams.json',
         success: function(data){
             try{
                 teams = typeof data === 'object' ? data : JSON.parse(data);
@@ -365,7 +365,7 @@ utils.ready(function () {
         score301.innerText = uscore;
         utils.addClass(rank301, 'loading-icon');
         utils.ajax({
-            url: 'http://localhost/world_cup_shot_game/api/post.php',
+            url: 'api/post.php',
             data: {
                 team: team,
                 score: uscore
@@ -402,7 +402,7 @@ utils.ready(function () {
         utils.addClass(rankBox, 'show');
         utils.addClass(rankList, 'loading-icon');
         utils.ajax({
-            url: 'http://localhost/world_cup_shot_game/api/ranking.php',
+            url: 'api/ranking.php',
             success: function (data) {
                 try{
                     data = typeof data === 'object' ? data : JSON.parse(data);
