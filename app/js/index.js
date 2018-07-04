@@ -83,6 +83,7 @@ utils.ready(function () {
     utils.addClass(teamList, 'loading-icon');
     utils.ajax({
         url: 'teams.json',
+        type: 'GET',
         success: function(data){
             try{
                 teams = typeof data === 'object' ? data : JSON.parse(data);
@@ -135,7 +136,7 @@ utils.ready(function () {
         }
         utils.removeClass(teamSelect, 'show');
         turnScene(1);
-        rules.querySelector('.rules-time').innerHTML = timeLimit;
+        // rules.querySelector('.rules-time').innerHTML = timeLimit;
         setTimeout(function () {
             utils.addClass(rules, 'show');
         },500);
@@ -327,7 +328,6 @@ utils.ready(function () {
                 timer = setTimeout( function(){
                     clearTimeout(timer);
                     reStat();
-                    if(countTime <= 0) gameOver();
                 }, 200);
             }else{
                 timer = requestFrame(re);
@@ -350,6 +350,7 @@ utils.ready(function () {
             clearInterval(clock);
             countTime = 0;
             clock201.innerText = 0;
+            gameOver();
         }else{
             clock201.innerText = countTime;
         }
@@ -376,6 +377,7 @@ utils.ready(function () {
                     if(typeof data.msg === 'object'){
                         rank301.innerText = data.msg.ranking || '';
                         if(teams) team301.innerText = teams[team-1].name || '';
+                        document.title = '我在點球比賽中為'+teams[team-1].name+'隊貢獻了'+uscore+'球，球隊當前排名第'+(data.msg.ranking || '')+'，你也來試試吧！';
                     }
                 }
             },
