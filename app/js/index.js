@@ -24,7 +24,17 @@ utils.ready(function () {
         rankBtn = document.querySelector('.rank-btn'),
         rankBox = document.getElementById('rank-box'),
         rankList = document.getElementById('rank-list'),
+        result = document.querySelector('.result'),
+        score301 = document.querySelector('.result-score'),
+        rank301 = document.querySelector('.current-rank-num'),
+        team301 = document.querySelector('.result-team'),
+        again = document.querySelector('.again'),
+        share = document.querySelector('.share'),
         goalie203Cls = goalie[2].className,
+        sharePopup = utils.popup({
+            background: 'rgba(0,0,0,.7)',
+            color: '#fff'
+        }),
         kickAudio = new Audio(),
         requestFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
         cancelFrame = window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame,
@@ -176,6 +186,8 @@ utils.ready(function () {
         clock201.innerText = timeLimit;
         countTime = timeLimit;
         utils.removeClass(pointer201, 'hide');
+        speedY.splice(0, speedY.length);
+        speedX.splice(0, speedX.length);
         reStat();
     }
 
@@ -352,8 +364,8 @@ utils.ready(function () {
                 }
                 score201.innerText = uscore;
 
-                timer = setTimeout( function(){
-                    clearTimeout(timer);
+                var nextTimer = setTimeout( function(){
+                    clearTimeout(nextTimer);
                     reStat();
                 }, 200);
             }else{
@@ -373,23 +385,16 @@ utils.ready(function () {
 
     function clockFn(){
         countTime -= 1;
-        if(countTime <= 0){
+        if(countTime === 0){
             clearInterval(clock);
-            countTime = 0;
-            clock201.innerText = 0;
+            isPlaying = false;
+            clock201.innerText = '0';
             gameOver();
-			isPlaying = false;
         }else{
             clock201.innerText = countTime;
         }
     }
 
-    var result = document.querySelector('.result'),
-        score301 = document.querySelector('.result-score'),
-        rank301 = document.querySelector('.current-rank-num'),
-        team301 = document.querySelector('.result-team'),
-        again = document.querySelector('.again'),
-        share = document.querySelector('.share');
     function gameOver(){
         score301.innerText = uscore;
         utils.addClass(rank301, 'loading-icon');
@@ -413,7 +418,6 @@ utils.ready(function () {
             },
             complete: function () {
                 utils.removeClass(rank301, 'loading-icon');
-				clearInterval(clock);
             }
         });
 
@@ -477,11 +481,6 @@ utils.ready(function () {
         readyStart();
         turnScene(1);
     };
-
-    var sharePopup = utils.popup({
-        background: 'rgba(0,0,0,.7)',
-        color: '#fff'
-    });
 
     share.onclick = function(){
         if(/MicroMessenger/i.test(window.navigator.userAgent)){

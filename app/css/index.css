@@ -324,18 +324,13 @@ body{
     position: absolute;
     top: 0;
     right: 0;
-    text-align: center;
     width: 30px;
     height: 30px;
     margin-top: 12%;
     margin-right: 6%;
-    font-size: 30px;
-    line-height: 25px;
-    color: #fff;
-    -webkit-border-radius: 50%;
-    -moz-border-radius: 50%;
-    border-radius: 50%;
-    background: #627fc9;
+    background: url("../img/close.png") no-repeat center;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
 }
 .rules-content{
     position: absolute;
