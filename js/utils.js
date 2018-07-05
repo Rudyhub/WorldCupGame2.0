@@ -167,7 +167,7 @@ var utils = {
         var _this = this,
             popup = this.popup(),
             div = document.createElement('div'),
-            imgs = ['again.png','ball.png', 'bg201.jpg','bg301.jpg',
+            imgs = ['again.png','ball.png', 'bg201.jpg','bg301.jpg','close.png',
                 'fail.png','goalie01.png', 'goalie02.png','goalie03.png',
                 'NO1.png','NO2.png','NO3.png',
                 'p101.jpg', 'p102.jpg','p103.png','p104.png',
