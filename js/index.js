@@ -49,7 +49,10 @@ utils.ready(function () {
         touchY = 0,
         teams = null,
         team = 0,
-        prevent = {passive: false};
+        prevent = {passive: false},
+        teamListTouchY = 0,
+        teamListScrollTop = 0,
+        teamListTimer = null;
 
     //用来阻止移动端浏览器默认的橡皮弹性，尤其iphone
     utils.addEvent(document.body, 'touchstart', function(e){
@@ -64,7 +67,24 @@ utils.ready(function () {
         if(e.target === showRules){
             utils.addClass(rules, 'show');
         }
+        teamListTouchY = e.targetTouches[0].clientY;
+        teamListScrollTop = teamList.scrollTop;
     }, prevent);
+    utils.addEvent(document.body, 'touchmove', function (e) {
+        e.preventDefault();
+        teamList.scrollTop = teamListScrollTop + (teamListTouchY - e.targetTouches[0].clientY);
+    }, prevent);
+    utils.addEvent(document.body, 'touchend', function (e) {
+        var d = 10, dis = e.changedTouches[0].clientY-teamListTouchY, dir = dis < 0 ? 1 : -1;
+        if(Math.abs(dis) > 5){
+            if(teamListTimer) clearInterval(teamListTimer);
+            teamListTimer = setInterval(function () {
+                d *= .8;
+                if(d < 1) clearInterval(teamListTimer);
+                teamList.scrollTop += d*dir;
+            }, 16.6);
+        }
+    });
 
     function turnScene(index){
         for(var i=0; i<3; i++){
