@@ -4,6 +4,7 @@ html,body{
 }
 body{
     margin: 0;
+    font-family: "Microsoft YaHei", sans-serif;
 }
 .cover{
     overflow: hidden;
@@ -223,8 +224,6 @@ body{
     opacity: 0;
     -webkit-transform-origin: center 60%;
     transform-origin: center 60%;
-    -webkit-filter: drop-shadow(0 0 3px #fff);
-    filter: drop-shadow(0 0 3px #fff);
     z-index: 2;
 }
 .steer.touch{
@@ -233,10 +232,13 @@ body{
 .score201,
 .clock201 {
     position: absolute;
-    top: 0;
+    top: 5px;
     font-size: 18px;
-    color: #068042;
-    margin: 0 .3em;
+    color: #fff;
+    padding: 3px .8em;
+    background: url("../img/txt-bg.png") no-repeat;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
 }
 .score201{
     left: 0;

@@ -50,9 +50,11 @@ utils.ready(function () {
         teams = null,
         team = 0,
         prevent = {passive: false},
-        teamListTouchY = 0,
+		bodyTouchY = 0,
         teamListScrollTop = 0,
-        teamListTimer = null;
+        bodyScrollTimer = null,
+        rankListScrollTop = 0,
+		isPlaying = false;
 
     //用来阻止移动端浏览器默认的橡皮弹性，尤其iphone
     utils.addEvent(document.body, 'touchstart', function(e){
@@ -67,21 +69,26 @@ utils.ready(function () {
         if(e.target === showRules){
             utils.addClass(rules, 'show');
         }
-        teamListTouchY = e.targetTouches[0].clientY;
+
+        bodyTouchY = e.targetTouches[0].clientY;
         teamListScrollTop = teamList.scrollTop;
+        rankListScrollTop = rankList.scrollTop;
     }, prevent);
     utils.addEvent(document.body, 'touchmove', function (e) {
         e.preventDefault();
-        teamList.scrollTop = teamListScrollTop + (teamListTouchY - e.targetTouches[0].clientY);
+        teamList.scrollTop = teamListScrollTop + (bodyTouchY - e.targetTouches[0].clientY);
+        rankList.scrollTop = rankListScrollTop + (bodyTouchY - e.targetTouches[0].clientY);
     }, prevent);
     utils.addEvent(document.body, 'touchend', function (e) {
-        var d = 10, dis = e.changedTouches[0].clientY-teamListTouchY, dir = dis < 0 ? 1 : -1;
+        var d = 10, dis = e.changedTouches[0].clientY-bodyTouchY, dir = dis < 0 ? 1 : -1;
+
         if(Math.abs(dis) > 5){
-            if(teamListTimer) clearInterval(teamListTimer);
-            teamListTimer = setInterval(function () {
+            if(bodyScrollTimer) clearInterval(bodyScrollTimer);
+            bodyScrollTimer = setInterval(function () {
                 d *= .8;
-                if(d < 1) clearInterval(teamListTimer);
+                if(d < 1) clearInterval(bodyScrollTimer);
                 teamList.scrollTop += d*dir;
+                rankList.scrollTop += d*dir;
             }, 16.6);
         }
     });
@@ -156,7 +163,6 @@ utils.ready(function () {
         }
         utils.removeClass(teamSelect, 'show');
         turnScene(1);
-        // rules.querySelector('.rules-time').innerHTML = timeLimit;
         setTimeout(function () {
             utils.addClass(rules, 'show');
         },500);
@@ -285,10 +291,11 @@ utils.ready(function () {
         kickAudio.currentTime = 0;
         kickAudio.play();
 
-        if(countTime === timeLimit) {
-            clock = setInterval(clockFn, 1000);
+		if(!isPlaying){
+			clock = setInterval(clockFn, 1000);
             utils.addClass(pointer201, 'hide');
-        }
+			isPlaying = true;
+		}
     }
 
     function motion(x, y){
@@ -371,6 +378,7 @@ utils.ready(function () {
             countTime = 0;
             clock201.innerText = 0;
             gameOver();
+			isPlaying = false;
         }else{
             clock201.innerText = countTime;
         }
@@ -394,11 +402,9 @@ utils.ready(function () {
             success: function(data){
                 data = typeof data === 'object' ? data : JSON.parse(data);
                 if(parseInt(data.code) === 0){
-                    if(typeof data.msg === 'object'){
-                        rank301.innerText = data.msg.ranking || '';
-                        if(teams) team301.innerText = teams[team-1].name || '';
-                        document.title = '我在點球比賽中為'+teams[team-1].name+'隊貢獻了'+uscore+'球，球隊當前排名第'+(data.msg.ranking || '')+'，你也來試試吧！';
-                    }
+                    rank301.innerText = data.msg || '';
+                    if(teams) team301.innerText = teams[team-1].name || '';
+                    document.title = '我在點球比賽中為'+teams[team-1].name+'隊貢獻了'+uscore+'球，球隊當前排名第'+(data.msg || '')+'，你也來試試吧！';
                 }
             },
             fail: function(xhr){
@@ -407,6 +413,7 @@ utils.ready(function () {
             },
             complete: function () {
                 utils.removeClass(rank301, 'loading-icon');
+				clearInterval(clock);
             }
         });
 

@@ -173,7 +173,7 @@ var utils = {
                 'p101.jpg', 'p102.jpg','p103.png','p104.png',
                 'pointer.png','rank-bg.png', 'rank-btn.png','rules.png',
                 'share.png','show-rules.png','start.png','steer.png',
-                'success.png','teams-bg.jpg','teams-title.png'
+                'success.png','teams-bg.jpg','teams-title.png','txt-bg.png'
             ];
         div.className = 'popup-inner';
         this.addClass(div, 'loading-icon');
